@@ -12,7 +12,10 @@ Later bookers are waitlisted and promoted automatically when a slot frees.
   touch Orbit's tables from here. Logins (auth.users) are shared with Orbit.
 - Auth redirect URLs: add this app's URLs (`http://localhost:3001/**` and the Vercel URL) under
   Supabase → Authentication → URL Configuration, or confirmation links land on Orbit's site.
-- Vercel: kansyneorbit account via `vercel-orbit`, team `orbit-kansyne`.
+- Vercel: kansyneorbit account via `vercel-orbit`, project `leaveslot`
+  (`prj_AR4iQOaE6NspIw9VExKsw6oIMFAe`) in team `orbit-kansyne` (`team_7lDdhGJkuPgSESsfFr153vzU`).
+  Production: https://leaveslot.vercel.app. Every push to `main` deploys production.
+- GitHub: `kansyneorbit/LeaveSlot`.
 
 ## Rules
 - All data access is server-side with the signed-in user's Supabase client, so RLS applies.
@@ -33,4 +36,4 @@ Later bookers are waitlisted and promoted automatically when a slot frees.
 
 ## Status (2026-10-22)
 - Applied to Supabase: `20261022000000_leaveslot_core` (recorded there as `leaveslot_core`).
-- Not yet: GitHub repo / Vercel project, payments, SMS login, email notifications.
+- Deployed to Vercel (see above). Not yet: payments, SMS login, email notifications.
