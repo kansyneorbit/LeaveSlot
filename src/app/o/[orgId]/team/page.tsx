@@ -1,10 +1,10 @@
 import { headers } from 'next/headers'
-import { Banner, Card, Field, PageHeader, Textarea } from '@/components/ui'
-import { SubmitButton } from '@/components/submit-button'
+import { Banner, Card, PageHeader } from '@/components/ui'
 import { createClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/session'
 import type { Member } from '@/lib/types'
 import { addPeople, updatePerson } from './actions'
+import { PeopleForm } from './people-form'
 
 export const metadata = { title: 'Team' }
 
@@ -38,7 +38,19 @@ export default async function TeamPage({ params, searchParams }: {
       {error && <Banner>{error}</Banner>}
       {notice && !error && <Banner tone="info">{notice}</Banner>}
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
+        <Card className="p-4">
+          <h2 className="mb-3 font-semibold text-ink">Add employees</h2>
+          <PeopleForm action={addPeople.bind(null, orgId)} />
+        </Card>
+        <Card className="h-fit p-4 text-sm text-soft">
+          <h2 className="mb-2 font-semibold text-ink">How employees join</h2>
+          <p>Send them this link. They create a login with the <b>same email</b> you added and land straight in {org.name}.</p>
+          <p className="mt-2 break-all rounded-md bg-muted px-2 py-1.5 font-mono text-xs text-ink">{origin}/signup</p>
+        </Card>
+      </div>
+
+      <div>
         <Card className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="border-b border-line text-left text-xs uppercase text-faint">
@@ -79,23 +91,6 @@ export default async function TeamPage({ params, searchParams }: {
             </tbody>
           </table>
         </Card>
-
-        <div className="space-y-6">
-          <Card className="p-4">
-            <h2 className="mb-3 font-semibold text-ink">Add employees</h2>
-            <form action={addPeople.bind(null, orgId)} className="space-y-3">
-              <Field label="One per line" hint="Name, email, mobile — mobile is optional. You can paste from Excel.">
-                <Textarea name="people" rows={6} placeholder={'Anu Mathew, anu@example.com, 9876543210\nRahul K, rahul@example.com'} />
-              </Field>
-              <SubmitButton className="w-full" pendingText="Adding…">Add</SubmitButton>
-            </form>
-          </Card>
-          <Card className="p-4 text-sm text-soft">
-            <h2 className="mb-2 font-semibold text-ink">How employees join</h2>
-            <p>Send them this link. They create a login with the <b>same email</b> you added and land straight in {org.name}.</p>
-            <p className="mt-2 break-all rounded-md bg-muted px-2 py-1.5 font-mono text-xs text-ink">{origin}/signup</p>
-          </Card>
-        </div>
       </div>
     </div>
   )
