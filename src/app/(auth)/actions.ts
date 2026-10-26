@@ -26,16 +26,47 @@ export async function signUp(form: FormData) {
   if (!name) fail('/signup', 'Enter your name.')
   if (password.length < 8) fail('/signup', 'Use a password of at least 8 characters.')
 
-  const h = await headers()
-  const origin = h.get('origin') ?? `${h.get('x-forwarded-proto') ?? 'http'}://${h.get('host')}`
   const supabase = await createClient()
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: `${origin}/auth/callback`, data: { full_name: name } },
+    options: { emailRedirectTo: `${await origin()}/auth/callback`, data: { full_name: name } },
   })
   if (error) fail('/signup', error.message)
-  redirect(`/signup?sent=${encodeURIComponent(email)}`)
+  // Supabase answers an already-registered email with a user that has no identities and sends
+  // nothing. Logins are shared with Kansyne Orbit, so this is common: send them to sign in.
+  if (data.user && data.user.identities?.length === 0) {
+    redirect(`/login?notice=${encodeURIComponent(
+      'This email already has a login (from Kansyne Orbit or an earlier sign-up), so no email was sent. '
+      + 'Sign in with that password, or use "Forgot password?".')}`)
+  }
+  redirect('/signup?sent=1')
+}
+
+async function origin() {
+  const h = await headers()
+  return h.get('origin') ?? `${h.get('x-forwarded-proto') ?? 'http'}://${h.get('host')}`
+}
+
+export async function requestReset(form: FormData) {
+  const email = str(form, 'email').toLowerCase()
+  if (!email) fail('/forgot', 'Enter your email.')
+  const supabase = await createClient()
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${await origin()}/auth/callback?next=/reset`,
+  })
+  if (error) fail('/forgot', error.status === 429 ? 'Too many emails sent — wait a few minutes and try again.' : error.message)
+  redirect('/forgot?sent=1')
+}
+
+export async function setNewPassword(form: FormData) {
+  const password = String(form.get('password') ?? '')
+  if (password.length < 8) fail('/reset', 'Use a password of at least 8 characters.')
+  if (password !== String(form.get('confirm') ?? '')) fail('/reset', 'The two passwords don’t match.')
+  const supabase = await createClient()
+  const { error } = await supabase.auth.updateUser({ password })
+  if (error) fail('/reset', error.message)
+  redirect('/app')
 }
 
 export async function signOut() {

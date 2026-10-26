@@ -2,12 +2,13 @@ import { NextResponse, type NextRequest } from 'next/server'
 import type { EmailOtpType } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 
-// Landing point for email confirmation links: turns the link into a session.
+// Landing point for email links (confirmation, password reset): turns the link into a session.
 export async function GET(request: NextRequest) {
   const url = request.nextUrl
   const code = url.searchParams.get('code')
   const tokenHash = url.searchParams.get('token_hash')
   const type = url.searchParams.get('type') as EmailOtpType | null
+  const next = url.searchParams.get('next') === '/reset' || type === 'recovery' ? '/reset' : '/app'
   const supabase = await createClient()
 
   let ok = false
@@ -20,7 +21,10 @@ export async function GET(request: NextRequest) {
   const dest = url.clone()
   dest.search = ''
   if (ok) {
-    dest.pathname = '/app'
+    dest.pathname = next
+  } else if (next === '/reset') {
+    dest.pathname = '/forgot'
+    dest.searchParams.set('error', 'That reset link has expired or was already used. Ask for a new one.')
   } else {
     dest.pathname = '/login'
     // With the default email template, Supabase confirms the address before

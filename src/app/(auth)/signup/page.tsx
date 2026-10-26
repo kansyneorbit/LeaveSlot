@@ -12,7 +12,7 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
       <Card className="p-6">
         <h1 className="mb-2 text-lg font-semibold">Check your email</h1>
         <p className="text-sm text-soft">
-          We sent a confirmation link to <strong className="text-ink">{sent}</strong>. Open it, then{' '}
+          We sent a confirmation link to your email. Open it, then{' '}
           <Link href="/login" className="font-medium text-brand hover:underline">sign in</Link>.
         </p>
       </Card>

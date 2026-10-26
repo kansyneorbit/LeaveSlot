@@ -10,7 +10,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   return (
     <Card className="p-6">
       <h1 className="mb-1 text-lg font-semibold">Sign in</h1>
-      <p className="mb-5 text-sm text-soft">Use the email your department registered for you.</p>
+      <p className="mb-5 text-sm text-soft">
+        Use the email your department registered for you. Already use Kansyne Orbit? Same email and password.
+      </p>
       <form action={signIn} className="space-y-4">
         {error && <Banner>{error}</Banner>}
         {notice && !error && <Banner tone="info">{notice}</Banner>}
@@ -20,6 +22,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <Field label="Password">
           <Input name="password" type="password" autoComplete="current-password" required />
         </Field>
+        <p className="-mt-2 text-right text-xs">
+          <Link href="/forgot" className="text-brand hover:underline">Forgot password?</Link>
+        </p>
         <SubmitButton className="w-full" pendingText="Signing in…">Sign in</SubmitButton>
       </form>
       <p className="mt-5 text-center text-sm text-soft">
